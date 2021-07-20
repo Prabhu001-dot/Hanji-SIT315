@@ -1,0 +1,50 @@
+// C++ code
+//
+const int PIR = 2;
+const int LED = 12;
+
+//Globals
+int led_state = LOW;
+int led_state1= HIGH;
+
+
+void setup()
+{
+  Serial.begin(4500);
+  pinMode(PIR, INPUT_PULLUP	);
+  pinMode(LED, OUTPUT);  
+  attachInterrupt(digitalPinToInterrupt(PIR), isr, RISING);
+}
+void loop()
+{
+  
+  
+}
+
+void isr()
+{
+int value = digitalRead(PIR);
+  
+  if(value == led_state1)
+  {
+    digitalWrite(LED, led_state1);
+    Serial.println("Motion Detected, Light's Glowing");
+    delay(300);
+    
+    digitalWrite(LED, led_state);
+    Serial.println("Light OFF, Movements stopped");
+    
+  }
+  
+  else
+  {
+    digitalWrite(LED, led_state);
+    Serial.println("NO Motion is Deteced");
+  }
+  delay(1500);
+  
+  led_state= !led_state;
+  digitalWrite(LED, led_state);
+}
+
+  
