@@ -1,19 +1,22 @@
 // C++ code
 //
-const int PIR = 2;
-const int LED = 12;
+const int PIR = 2; // Setting up the Motion pin.
+const int LED = 12;//Setting up the LED pin.
 
 //Globals
-int led_state = LOW;
-int led_state1= HIGH;
+int led_state = LOW; //Setting the state low mean lights off.
+int led_state1= HIGH;//Setting the state high depicting it turned on,
 
 
 void setup()
 {
-  Serial.begin(4500);
-  pinMode(PIR, INPUT_PULLUP	);
-  pinMode(LED, OUTPUT);  
-  attachInterrupt(digitalPinToInterrupt(PIR), isr, RISING);
+  Serial.begin(4500);//Starting the serial monitor after certain interval of tine.
+  
+  pinMode(PIR, INPUT_PULLUP	);//PIR motion pin as INPUT.
+  pinMode(LED, OUTPUT);  //Initialize the LED as Output.
+  
+  //Attach the interrupt to the isr vector
+  attachInterrupt(digitalPinToInterrupt(PIR), isr, CHANGE);
 }
 void loop()
 {
@@ -23,28 +26,8 @@ void loop()
 
 void isr()
 {
-int value = digitalRead(PIR);
-  
-  if(value == led_state1)
-  {
-    digitalWrite(LED, led_state1);
-    Serial.println("Motion Detected, Light's Glowing");
-    delay(300);
     
-    digitalWrite(LED, led_state);
-    Serial.println("Light OFF, Movements stopped");
-    
-  }
-  
-  else
-  {
-    digitalWrite(LED, led_state);
-    Serial.println("NO Motion is Deteced");
-  }
-  delay(1500);
-  
-  led_state= !led_state;
-  digitalWrite(LED, led_state);
+  led_state= !led_state; //If the state is not low the LED will blink.
+  digitalWrite(LED, led_state); 
+  Serial.println("Motion Detected");// Print motion Detected.
 }
-
-  
