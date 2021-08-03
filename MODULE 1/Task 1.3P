@@ -1,0 +1,44 @@
+// C++ code
+//
+const int pb = 2;//setting up the  PushButton.
+const int PIR = 3; // Setting up the Motion pin.
+const int LED = 9;//Setting up the LED pin.
+
+//Globals
+int led_state = LOW; //Setting the state low mean lights off.
+
+
+
+void setup()
+{
+  Serial.begin(4500);//Starting the serial monitor after certain interval of tine.
+    
+  pinMode(PIR, INPUT_PULLUP);//PIR motion pin as INPUT.
+  pinMode(pb, INPUT_PULLUP);
+  pinMode(LED, OUTPUT);
+  
+  attachInterrupt(digitalPinToInterrupt(pb), push, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIR), motion, CHANGE);
+  
+  
+}
+void loop()
+{
+  Serial.println("Loop is working let click on interrupt");
+  delay(9600);
+    
+}
+void push()
+{
+  led_state= !led_state;
+  digitalWrite(LED, led_state);
+  Serial.println("Pushbutton interrupt is used");
+  Serial.println("It Works as expected");
+}
+
+void motion()
+{    
+  led_state= !led_state;
+  digitalWrite(LED, led_state);
+  Serial.println("Interrupt work for PIR motionn as well");
+}
