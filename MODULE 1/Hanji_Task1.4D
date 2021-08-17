@@ -1,0 +1,125 @@
+// C++ code
+//Inout Devicea
+const int pb = 2;//setting up the  PushButton.
+const int PIR3 = 5;
+const int PIR2= 3; // Setting up the Motion pin.
+const int PIR1= 4;
+
+//Lets intialise the LEDs.
+const int GREEN_LED = 13;//Setting up the LED pin.
+const int YELLOW_LED =12;
+const int RED_LED = 11;
+
+
+//Globals
+int led_state = LOW;
+int led_state2 = LOW;
+int led_state3 = LOW;
+//Setting the state low mean lights off.
+
+
+
+void setup()
+{
+  Serial.begin(4500);//Starting the serial monitor after certain interval of tine.
+    
+ 
+  
+  pinMode(PIR2, INPUT_PULLUP);
+  //PIR motion pin as INPUT.
+  pinMode(pb, INPUT_PULLUP);
+  pinMode(GREEN_LED, OUTPUT);
+  
+  
+  pinMode(12, OUTPUT);
+  pinMode(PIR1, INPUT_PULLUP);
+  
+  pinMode(RED_LED, OUTPUT);
+  pinMode(PIR3, INPUT_PULLUP);
+  
+  
+  PCICR |= B00000111;  
+  //ENABLING PCMSK2 (GROUP2 : PCINT16 TO PCINT23)
+  
+  PCMSK2 |= B0111100; 
+  // D2, D3, D4, D5 WILL TRIGGER INTERRUPT.
+  
+  //DDRB |= (1 << LED_PIN);
+  
+  //Clearing Registers
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1 = 0;
+  
+  
+  //(16000000 / (prescaler * (desired interrupt frequency + 1) )
+  //4Hz = 16000000/ (1024 * (3905.25 + 1))
+  OCR1A = 3905.25;
+  //SETTING CS12 TO 1
+  //TCCRIB |= B00000010;
+  
+  
+  TCCR1B|= (1 << CS12) | (0 << CS11) | (1 << CS10);  
+   
+  TIMSK1 |= (1 << OCIE1A);
+  TCCR1B |= (1 << WGM12);
+  interrupts();
+  attachInterrupt(digitalPinToInterrupt(pb), push, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIR2), motion, CHANGE);
+  sei();
+  
+  
+}
+void loop()
+{
+  Serial.println("Loop is working let click on interrupt");
+  delay(9600);
+    
+}
+void push()
+{
+  led_state= !led_state;
+  digitalWrite(GREEN_LED, led_state);
+  Serial.println("Pushbutton interrupt is used");
+  Serial.println("It Works as expected");
+}
+
+void motion()
+{    
+  led_state= !led_state;
+  digitalWrite(GREEN_LED, led_state);
+  Serial.println("Interrupt work for PIR motionn as well");
+}
+ISR(PCINT2_vect)
+{
+  if(digitalRead(PIR1) && !led_state2)
+  {
+    digitalWrite(12, led_state2);
+    Serial.println("MOTION DETECTED RISING ");
+    led_state2 = true;
+  }
+  else if(!digitalRead(PIR1) && led_state2)
+  {
+    Serial.println("MOTION DETECTED FALLING");
+    led_state2 = false;
+  }
+  if(digitalRead(PIR1) && !led_state2)
+  {
+    digitalWrite(12, led_state2);
+    Serial.println("MOTION DETECTED RISING ");
+    led_state2 = true;
+  }
+  else if(!digitalRead(PIR1) && led_state2)
+  {
+    Serial.println("MOTION DETECTED FALLING");
+    led_state2 = false;
+  }
+}
+    
+  
+ISR(TIMER1_COMPA_vect)
+{
+  digitalWrite(11, digitalRead(11)^1);
+  Serial.println("Time: Working");
+  
+}
